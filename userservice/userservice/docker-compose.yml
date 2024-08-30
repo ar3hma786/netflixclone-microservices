@@ -1,0 +1,57 @@
+
+
+services:
+  userservice:
+    image: netflix-user-service-image
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/userservice
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 8618609838
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411
+    depends_on:
+      - db
+      - eureka
+      - zipkin
+    networks:
+      - app-network
+
+  eureka:
+    image: bitnami/spring-cloud-eureka:latest
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    networks:
+      - app-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      STORAGE_TYPE: mem
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: userservice
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 8618609838
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge

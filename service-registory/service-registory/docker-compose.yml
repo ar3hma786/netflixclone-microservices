@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  eureka-server:
+    image: ar3hma786/eureka-server  
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+      EUREKA_SERVER_WAIT_TIME_IN_MS: 5000
+    networks:
+      - eureka-network
+
+networks:
+  eureka-network:
+    driver: bridge

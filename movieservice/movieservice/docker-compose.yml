@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  userservice:
+    image: netflix-movie-service-image
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/movieservice
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 8618609838
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_ZIPKIN_BASE_URL: http://zipkin:9411
+    depends_on:
+      - db
+      - eureka
+      - zipkin
+    networks:
+      - app-network
+
+  eureka:
+    image: springcloud/eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      STORAGE_TYPE: mem
+    networks:
+      - app-network
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: movieservice
+      MYSQL_ROOT_PASSWORD: 8618609838
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
